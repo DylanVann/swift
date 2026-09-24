@@ -323,6 +323,9 @@
 (type_pack_expansion
   "repeat" @keyword)
 
+; The patterns below refine captures made earlier in this file. Later patterns take
+; precedence for the same node, so their order matters.
+
 ; Declarations: color a declared name distinctly from its later uses, as Xcode does.
 (class_declaration
   name: (type_identifier) @type.definition)
@@ -339,23 +342,71 @@
 (enum_entry
   name: (simple_identifier) @variant)
 
-; Attributes: keyword-like by default, with property wrappers and macros as macros and
-; global actors and result builders as system types, following Xcode's coloring.
-(attribute) @attribute
-
+; Attributes: the "@" and the name, leaving any arguments to their own captures.
+; Property wrappers and macros are macros, and global actors and result builders are
+; system types, following Xcode's coloring.
 (attribute
+  "@" @attribute
   (user_type
     (type_identifier) @attribute))
 
 ((attribute
+  "@" @function.macro
   (user_type
-    (type_identifier) @function.macro))
-  (#match? @function.macro "^(Observable|Model|State|Binding|Bindable|Environment|EnvironmentObject|StateObject|ObservedObject|Published|AppStorage|SceneStorage|FocusState|FocusedValue|FocusedBinding|GestureState|Namespace|ScaledMetric|Query|Attribute|Relationship|Transient|Test|Suite|Entry|Previewable|Animatable|DebugDescription|Dependency|Reducer|ObservableState|Presents)$"))
+    (type_identifier) @function.macro @_attribute_name))
+  (#any-of? @_attribute_name
+    "Observable"
+    "Model"
+    "State"
+    "Binding"
+    "Bindable"
+    "Environment"
+    "EnvironmentObject"
+    "StateObject"
+    "ObservedObject"
+    "Published"
+    "AppStorage"
+    "SceneStorage"
+    "FocusState"
+    "FocusedValue"
+    "FocusedBinding"
+    "GestureState"
+    "Namespace"
+    "ScaledMetric"
+    "Query"
+    "Attribute"
+    "Relationship"
+    "Transient"
+    "Test"
+    "Suite"
+    "Entry"
+    "Previewable"
+    "Animatable"
+    "DebugDescription"
+    "Dependency"
+    "Reducer"
+    "ObservableState"
+    "Presents"))
 
 ((attribute
+  "@" @type.builtin
   (user_type
-    (type_identifier) @type.builtin))
-  (#match? @type.builtin "^(MainActor|ViewBuilder|SceneBuilder|ToolbarContentBuilder|CommandsBuilder|TableColumnBuilder|TableRowBuilder|AccessibilityRotorContentBuilder|ResultBuilder|globalActor|resultBuilder|Sendable|Sendable|preconcurrency|retroactive)$"))
+    (type_identifier) @type.builtin @_attribute_name))
+  (#any-of? @_attribute_name
+    "MainActor"
+    "ViewBuilder"
+    "SceneBuilder"
+    "ToolbarContentBuilder"
+    "CommandsBuilder"
+    "TableColumnBuilder"
+    "TableRowBuilder"
+    "AccessibilityRotorContentBuilder"
+    "ResultBuilder"
+    "globalActor"
+    "resultBuilder"
+    "Sendable"
+    "preconcurrency"
+    "retroactive"))
 
 ; Constructor calls of capitalized names are types: project types by default, system
 ; types when the name is in the list below. The grammar parses `UUID()` as a call of a
@@ -371,7 +422,195 @@
   (call_expression
     (simple_identifier) @type.builtin)
 ]
-  (#match? @type.builtin "^(Any|AnyObject|AnyHashable|Array|ArraySlice|AsyncSequence|AsyncStream|AsyncThrowingStream|BinaryFloatingPoint|BinaryInteger|Bool|Character|ClosedRange|Codable|Collection|Comparable|ContiguousArray|CustomDebugStringConvertible|CustomStringConvertible|Decodable|Dictionary|Double|Duration|Encodable|Equatable|Error|ExpressibleByArrayLiteral|ExpressibleByBooleanLiteral|ExpressibleByDictionaryLiteral|ExpressibleByFloatLiteral|ExpressibleByIntegerLiteral|ExpressibleByNilLiteral|ExpressibleByStringLiteral|Float|Float16|Float32|Float64|Float80|FloatingPoint|Hashable|Hasher|Identifiable|Int|Int8|Int16|Int32|Int64|Iterator|IteratorProtocol|KeyPath|LocalizedError|Never|Numeric|ObjectIdentifier|Optional|OptionSet|PartialKeyPath|RandomAccessCollection|RandomNumberGenerator|Range|RawRepresentable|Result|Sendable|Sequence|Set|SignedInteger|SignedNumeric|StaticString|StringProtocol|String|Strideable|Substring|Task|TaskGroup|ThrowingTaskGroup|UInt|UInt8|UInt16|UInt32|UInt64|Unicode|UnsafeMutablePointer|UnsafeMutableRawPointer|UnsafePointer|UnsafeRawPointer|UnsignedInteger|Void|Actor|MainActor|Bundle|Calendar|Data|Date|DateComponents|DateFormatter|DateInterval|Decimal|FileManager|IndexPath|IndexSet|JSONDecoder|JSONEncoder|Locale|Measurement|Notification|NotificationCenter|NumberFormatter|OperationQueue|ProcessInfo|PropertyListDecoder|PropertyListEncoder|RunLoop|Scanner|Thread|TimeInterval|TimeZone|Timer|URL|URLComponents|URLRequest|URLResponse|URLSession|URLSessionConfiguration|UUID|UserDefaults|Alignment|Angle|AnyView|Axis|Binding|Button|Capsule|Circle|Color|Divider|EdgeInsets|Edge|EmptyView|EnvironmentValues|Font|ForEach|Form|GeometryReader|Group|GroupBox|HStack|Image|Label|LazyHGrid|LazyHStack|LazyVGrid|LazyVStack|Link|List|Menu|NavigationLink|NavigationPath|NavigationSplitView|NavigationStack|ObservableObject|Path|Picker|ProgressView|Rectangle|RoundedRectangle|Scene|ScrollView|Section|SecureField|Shape|Slider|Spacer|Stepper|TabView|Text|TextEditor|TextField|Toggle|ToolbarItem|VStack|View|ViewModifier|WindowGroup|ZStack|ModelContainer|ModelContext|PersistentModel|Logger|OSLog)$"))
+  (#any-of? @type.builtin
+    "Any"
+    "AnyObject"
+    "AnyHashable"
+    "Array"
+    "ArraySlice"
+    "AsyncSequence"
+    "AsyncStream"
+    "AsyncThrowingStream"
+    "BinaryFloatingPoint"
+    "BinaryInteger"
+    "Bool"
+    "Character"
+    "ClosedRange"
+    "Codable"
+    "Collection"
+    "Comparable"
+    "ContiguousArray"
+    "CustomDebugStringConvertible"
+    "CustomStringConvertible"
+    "Decodable"
+    "Dictionary"
+    "Double"
+    "Duration"
+    "Encodable"
+    "Equatable"
+    "Error"
+    "ExpressibleByArrayLiteral"
+    "ExpressibleByBooleanLiteral"
+    "ExpressibleByDictionaryLiteral"
+    "ExpressibleByFloatLiteral"
+    "ExpressibleByIntegerLiteral"
+    "ExpressibleByNilLiteral"
+    "ExpressibleByStringLiteral"
+    "Float"
+    "Float16"
+    "Float32"
+    "Float64"
+    "Float80"
+    "FloatingPoint"
+    "Hashable"
+    "Hasher"
+    "Identifiable"
+    "Int"
+    "Int8"
+    "Int16"
+    "Int32"
+    "Int64"
+    "Iterator"
+    "IteratorProtocol"
+    "KeyPath"
+    "LocalizedError"
+    "Never"
+    "Numeric"
+    "ObjectIdentifier"
+    "Optional"
+    "OptionSet"
+    "PartialKeyPath"
+    "RandomAccessCollection"
+    "RandomNumberGenerator"
+    "Range"
+    "RawRepresentable"
+    "Result"
+    "Sendable"
+    "Sequence"
+    "Set"
+    "SignedInteger"
+    "SignedNumeric"
+    "StaticString"
+    "StringProtocol"
+    "String"
+    "Strideable"
+    "Substring"
+    "Task"
+    "TaskGroup"
+    "ThrowingTaskGroup"
+    "UInt"
+    "UInt8"
+    "UInt16"
+    "UInt32"
+    "UInt64"
+    "Unicode"
+    "UnsafeMutablePointer"
+    "UnsafeMutableRawPointer"
+    "UnsafePointer"
+    "UnsafeRawPointer"
+    "UnsignedInteger"
+    "Void"
+    "Actor"
+    "MainActor"
+    "Bundle"
+    "Calendar"
+    "Data"
+    "Date"
+    "DateComponents"
+    "DateFormatter"
+    "DateInterval"
+    "Decimal"
+    "FileManager"
+    "IndexPath"
+    "IndexSet"
+    "JSONDecoder"
+    "JSONEncoder"
+    "Locale"
+    "Measurement"
+    "Notification"
+    "NotificationCenter"
+    "NumberFormatter"
+    "OperationQueue"
+    "ProcessInfo"
+    "PropertyListDecoder"
+    "PropertyListEncoder"
+    "RunLoop"
+    "Scanner"
+    "Thread"
+    "TimeInterval"
+    "TimeZone"
+    "Timer"
+    "URL"
+    "URLComponents"
+    "URLRequest"
+    "URLResponse"
+    "URLSession"
+    "URLSessionConfiguration"
+    "UUID"
+    "UserDefaults"
+    "Alignment"
+    "Angle"
+    "AnyView"
+    "Axis"
+    "Binding"
+    "Button"
+    "Capsule"
+    "Circle"
+    "Color"
+    "Divider"
+    "EdgeInsets"
+    "Edge"
+    "EmptyView"
+    "EnvironmentValues"
+    "Font"
+    "ForEach"
+    "Form"
+    "GeometryReader"
+    "Group"
+    "GroupBox"
+    "HStack"
+    "Image"
+    "Label"
+    "LazyHGrid"
+    "LazyHStack"
+    "LazyVGrid"
+    "LazyVStack"
+    "Link"
+    "List"
+    "Menu"
+    "NavigationLink"
+    "NavigationPath"
+    "NavigationSplitView"
+    "NavigationStack"
+    "ObservableObject"
+    "Path"
+    "Picker"
+    "ProgressView"
+    "Rectangle"
+    "RoundedRectangle"
+    "Scene"
+    "ScrollView"
+    "Section"
+    "SecureField"
+    "Shape"
+    "Slider"
+    "Spacer"
+    "Stepper"
+    "TabView"
+    "Text"
+    "TextEditor"
+    "TextField"
+    "Toggle"
+    "ToolbarItem"
+    "VStack"
+    "View"
+    "ViewModifier"
+    "WindowGroup"
+    "ModelContainer"
+    "ModelContext"
+    "PersistentModel"
+    "Logger"
+    "OSLog"))
 
 ([
   (type_identifier) @type.builtin
@@ -383,7 +622,40 @@
 ; System functions from the standard library.
 ((call_expression
   (simple_identifier) @function.builtin)
-  (#match? @function.builtin "^(print|debugPrint|dump|readLine|max|min|abs|swap|zip|stride|sequence|repeatElement|precondition|preconditionFailure|assert|assertionFailure|fatalError|type|unsafeBitCast|withExtendedLifetime|withUnsafePointer|withUnsafeMutablePointer|withUnsafeBytes|withUnsafeMutableBytes|withCheckedContinuation|withCheckedThrowingContinuation|withTaskGroup|withThrowingTaskGroup|withTaskCancellationHandler|autoreleasepool|isKnownUniquelyReferenced|numericCast|unsafeDowncast)$"))
+  (#any-of? @function.builtin
+    "print"
+    "debugPrint"
+    "dump"
+    "readLine"
+    "max"
+    "min"
+    "abs"
+    "swap"
+    "zip"
+    "stride"
+    "sequence"
+    "repeatElement"
+    "precondition"
+    "preconditionFailure"
+    "assert"
+    "assertionFailure"
+    "fatalError"
+    "type"
+    "unsafeBitCast"
+    "withExtendedLifetime"
+    "withUnsafePointer"
+    "withUnsafeMutablePointer"
+    "withUnsafeBytes"
+    "withUnsafeMutableBytes"
+    "withCheckedContinuation"
+    "withCheckedThrowingContinuation"
+    "withTaskGroup"
+    "withThrowingTaskGroup"
+    "withTaskCancellationHandler"
+    "autoreleasepool"
+    "isKnownUniquelyReferenced"
+    "numericCast"
+    "unsafeDowncast"))
 
 ; Compiler directives and diagnostics are preprocessor lines, not macros.
 (directive) @preproc
