@@ -357,12 +357,27 @@
     (type_identifier) @type.builtin))
   (#match? @type.builtin "^(MainActor|ViewBuilder|SceneBuilder|ToolbarContentBuilder|CommandsBuilder|TableColumnBuilder|TableRowBuilder|AccessibilityRotorContentBuilder|ResultBuilder|globalActor|resultBuilder|Sendable|Sendable|preconcurrency|retroactive)$"))
 
+; Constructor calls of capitalized names are types: project types by default, system
+; types when the name is in the list below. The grammar parses `UUID()` as a call of a
+; simple_identifier rather than as a constructor_expression, so both node kinds are covered.
+((call_expression
+  (simple_identifier) @type)
+  (#match? @type "^[A-Z]"))
+
 ; System types: the Swift standard library, common Foundation and SwiftUI types, and
 ; Apple's framework prefixes.
-((type_identifier) @type.builtin
+([
+  (type_identifier) @type.builtin
+  (call_expression
+    (simple_identifier) @type.builtin)
+]
   (#match? @type.builtin "^(Any|AnyObject|AnyHashable|Array|ArraySlice|AsyncSequence|AsyncStream|AsyncThrowingStream|BinaryFloatingPoint|BinaryInteger|Bool|Character|ClosedRange|Codable|Collection|Comparable|ContiguousArray|CustomDebugStringConvertible|CustomStringConvertible|Decodable|Dictionary|Double|Duration|Encodable|Equatable|Error|ExpressibleByArrayLiteral|ExpressibleByBooleanLiteral|ExpressibleByDictionaryLiteral|ExpressibleByFloatLiteral|ExpressibleByIntegerLiteral|ExpressibleByNilLiteral|ExpressibleByStringLiteral|Float|Float16|Float32|Float64|Float80|FloatingPoint|Hashable|Hasher|Identifiable|Int|Int8|Int16|Int32|Int64|Iterator|IteratorProtocol|KeyPath|LocalizedError|Never|Numeric|ObjectIdentifier|Optional|OptionSet|PartialKeyPath|RandomAccessCollection|RandomNumberGenerator|Range|RawRepresentable|Result|Sendable|Sequence|Set|SignedInteger|SignedNumeric|StaticString|StringProtocol|String|Strideable|Substring|Task|TaskGroup|ThrowingTaskGroup|UInt|UInt8|UInt16|UInt32|UInt64|Unicode|UnsafeMutablePointer|UnsafeMutableRawPointer|UnsafePointer|UnsafeRawPointer|UnsignedInteger|Void|Actor|MainActor|Bundle|Calendar|Data|Date|DateComponents|DateFormatter|DateInterval|Decimal|FileManager|IndexPath|IndexSet|JSONDecoder|JSONEncoder|Locale|Measurement|Notification|NotificationCenter|NumberFormatter|OperationQueue|ProcessInfo|PropertyListDecoder|PropertyListEncoder|RunLoop|Scanner|Thread|TimeInterval|TimeZone|Timer|URL|URLComponents|URLRequest|URLResponse|URLSession|URLSessionConfiguration|UUID|UserDefaults|Alignment|Angle|AnyView|Axis|Binding|Button|Capsule|Circle|Color|Divider|EdgeInsets|Edge|EmptyView|EnvironmentValues|Font|ForEach|Form|GeometryReader|Group|GroupBox|HStack|Image|Label|LazyHGrid|LazyHStack|LazyVGrid|LazyVStack|Link|List|Menu|NavigationLink|NavigationPath|NavigationSplitView|NavigationStack|ObservableObject|Path|Picker|ProgressView|Rectangle|RoundedRectangle|Scene|ScrollView|Section|SecureField|Shape|Slider|Spacer|Stepper|TabView|Text|TextEditor|TextField|Toggle|ToolbarItem|VStack|View|ViewModifier|WindowGroup|ZStack|ModelContainer|ModelContext|PersistentModel|Logger|OSLog)$"))
 
-((type_identifier) @type.builtin
+([
+  (type_identifier) @type.builtin
+  (call_expression
+    (simple_identifier) @type.builtin)
+]
   (#match? @type.builtin "^(NS|UI|CG|CA|CL|CN|CT|CV|AV|AR|EK|GK|HK|MK|MP|PK|SK|SC|VN|WK|OS)[A-Z][A-Za-z0-9]*$"))
 
 ; System functions from the standard library.
