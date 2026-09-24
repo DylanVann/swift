@@ -374,3 +374,7 @@
 (directive) @preproc
 
 (diagnostic) @preproc
+
+; Marks: MARK, TODO, and FIXME comments, which Xcode shows in bold and lists in the jump bar.
+((comment) @comment.mark
+  (#match? @comment.mark "^//+ ?(MARK|TODO|FIXME):"))
